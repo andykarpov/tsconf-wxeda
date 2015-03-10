@@ -2,16 +2,17 @@
 -- u16-TSConf Version 0.2.9
 -- DEVBOARD ReVerSE-U16 By MVV
 -------------------------------------------------------------------------------
--- V0.1.0	27.07.2014	ïåðâàÿ âåðñèÿ
--- V0.2.0	31.07.2014	äîáàâëåí òðàíñëÿòîð PS/2, HDMI
--- V0.2.1	03.08.2014	äîáàâëåí Delta-Sigma DAC, I2C
--- V0.2.3	11.08.2014	äîáàâëåí enc424j600
--- V0.2.4	24.08.2014	äîáàâëåíà ïîääåðæêà IDE Video DAC (zports.v, video_out.v)
--- V0.2.5	07.09.2014	äîáàâëåí ïîðò #0001=key_scan, èçìåíåíèÿ â keyboard.vhd
--- V0.2.6	09.09.2014	èñïðàâëåí âûâîä ïàëèòðû â (lut.vhd)
--- V0.2.7	13.09.2014	äðîæàíèå ìóëüòèêîëîðà íà tv80s, çàìåíèë íà t80s
--- V0.2.8	19.10.2014	èíâåíòèðîâàí CLK â ìîäóëÿõ video_tmbuf, video_sfile è äîáàâëåíû ðåãèñòðû íà âûõîäå
--- V0.2.9	02.11.2014	çàìåíà t80s, èñïðàâëåíèÿ â zint.v, zports.v, delta-sigma (ïðèâîäèò ê íàìàãíè÷èâàíèþ äèíàìèêîâ)
+-- V0.1.0	27.07.2014	Ð¿ÐµÑ€Ð²Ð°Ñ Ð²ÐµÑ€ÑÐ¸Ñ
+-- V0.2.0	31.07.2014	Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½ Ñ‚Ñ€Ð°Ð½ÑÐ»ÑÑ‚Ð¾Ñ€ PS/2, HDMI
+-- V0.2.1	03.08.2014	Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½ Delta-Sigma DAC, I2C
+-- V0.2.3	11.08.2014	Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½ enc424j600
+-- V0.2.4	24.08.2014	Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð° Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ° IDE Video DAC (zports.v, video_out.v)
+-- V0.2.5	07.09.2014	Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½ Ð¿Ð¾Ñ€Ñ‚ #0001=key_scan, Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ Ð² keyboard.vhd
+-- V0.2.6	09.09.2014	Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½ Ð²Ñ‹Ð²Ð¾Ð´ Ð¿Ð°Ð»Ð¸Ñ‚Ñ€Ñ‹ Ð² (lut.vhd)
+-- V0.2.7	13.09.2014	Ð´Ñ€Ð¾Ð¶Ð°Ð½Ð¸Ðµ Ð¼ÑƒÐ»ÑŒÑ‚Ð¸ÐºÐ¾Ð»Ð¾Ñ€Ð° Ð½Ð° tv80s, Ð·Ð°Ð¼ÐµÐ½Ð¸Ð» Ð½Ð° t80s
+-- V0.2.8	19.10.2014	Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½ CLK Ð² Ð¼Ð¾Ð´ÑƒÐ»ÑÑ… video_tmbuf, video_sfile Ð¸ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ñ‹ Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ñ‹ Ð½Ð° Ð²Ñ‹Ñ…Ð¾Ð´Ðµ
+-- V0.2.9	02.11.2014	Ð·Ð°Ð¼ÐµÐ½Ð° t80s, Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð² zint.v, zports.v, delta-sigma (Ð¿Ñ€Ð¸Ð²Ð¾Ð´Ð¸Ñ‚ Ðº Ð½Ð°Ð¼Ð°Ð³Ð½Ð¸Ñ‡Ð¸Ð²Ð°Ð½Ð¸ÑŽ Ð´Ð¸Ð½Ð°Ð¼Ð¸ÐºÐ¾Ð²)
+-- WXEDA	10.03.2015  Ð¿Ð¾Ñ€Ñ‚ Ð½Ð° Ð´ÐµÐ²Ð±Ð¾Ñ€Ð´Ñƒ WXEDA
 
 -- http://tslabs.info/forum/viewtopic.php?f=31&t=401
 -- http://zx-pk.ru/showthread.php?t=23528
@@ -58,7 +59,7 @@ use IEEE.numeric_std.all;
 
 entity tsconf is
 port (
-	-- Clock (50MHz)
+	-- Clock (48MHz)
 	CLK			: in std_logic;
 	-- SDRAM (32MB 16x16bit)
 	SDRAM_DQ		: inout std_logic_vector(15 downto 0);
@@ -70,52 +71,33 @@ port (
 	SDRAM_WE_N		: out std_logic;
 	SDRAM_CAS_N		: out std_logic;
 	SDRAM_RAS_N		: out std_logic;
-	-- I2C 
-	SCL			: inout std_logic;
-	SDA			: inout std_logic;
-	-- RTC (DS1338Z-33+)
---	RTC_SQW			: in std_logic;
-	-- SPI FLASH (M25P16)
+	SDRAM_CKE      : out std_logic;
+	SDRAM_CS_N     : out std_logic;
+	-- SPI FLASH (W25Q32)
 	DATA0			: in std_logic;
 	NCSO			: out std_logic;
 	DCLK			: out std_logic;
 	ASDO			: out std_logic;
-	-- HDMI
---	HDMI_CEC		: inout std_logic;
---	HDMI_DET_N		: in std_logic;
-	HDMI_D0			: out std_logic;
-	HDMI_D1			: out std_logic;
-	HDMI_D2			: out std_logic;
-	HDMI_CLK		: out std_logic;
+	-- VGA
+	VGA_R		: out std_logic_vector(4 downto 0);
+	VGA_G		: out std_logic_vector(5 downto 0);
+	VGA_B		: out std_logic_vector(4 downto 0);
+	VGA_HS		: out std_logic;
+	VGA_VS		: out std_logic;
 	-- SD/MMC Memory Card
---	SD_DET_N		: in std_logic;
 	SD_SO			: in std_logic;
 	SD_SI			: out std_logic;
 	SD_CLK			: out std_logic;
 	SD_CS_N			: out std_logic;
-	-- Ethernet (ENC424J600)
-	ETH_SO			: in std_logic;
-	ETH_INT_N		: in std_logic;
-	ETH_CS_N		: out std_logic;
-	-- USB Host (VNC2-32)
-	USB_RESET_N		: in std_logic;
---	USB_PROG_N		: inout std_logic;
---	USB_DBG			: inout std_logic;
---	USB_IO1			: in std_logic;
---	USB_IO3			: in std_logic;
-	USB_TX			: in std_logic;
---	USB_RX			: out std_logic;
---	USB_CLK			: out std_logic;
---	USB_SI			: out std_logic;
---	USB_SO			: in std_logic;
---	USB_CS_N		: out std_logic;
-	-- uBUS
-	AP			: out std_logic;
-	AN			: out std_logic);
---	BP			: in std_logic;
---	BN			: in std_logic;
---	CP			: in std_logic;
---	CN			: in std_logic);
+	-- External I/O
+	DAC_OUT_L	: out std_logic; 
+	DAC_OUT_R	: out std_logic; 
+	KEYS		: in std_logic_vector(3 downto 0);
+	BUZZER	: out std_logic;
+	-- PS/2 Keyboard
+	PS2_CLK	: inout std_logic;
+	PS2_DAT  : inout std_logic);
+
 end tsconf;
 
 architecture rtl of tsconf is
@@ -182,12 +164,6 @@ signal kb_do_bus		: std_logic_vector(4 downto 0);
 signal kb_f_bus			: std_logic_vector(4 downto 0);
 signal kb_joy_bus		: std_logic_vector(4 downto 0);
 signal key_scancode  		: std_logic_vector(7 downto 0);
--- UART
---signal uart_do_bus		: std_logic_vector(7 downto 0);
---signal uart_tx_empty		: std_logic;
---signal uart_tx_fifo_empty	: std_logic;
---signal uart_rx_avail		: std_logic;
---signal uart_rx_error		: std_logic;
 -- MC146818A
 signal mc146818a_wr		: std_logic;
 --signal mc146818a_rd		: std_logic;
@@ -848,8 +824,7 @@ port map (
 	inclk0			=> CLK, -- 50Mhz
 	locked			=> locked,
 	c0			=> clk_84mhz,
-	c1			=> clk_28mhz,
-	c2			=> clk_hdmi);
+	c1			=> clk_28mhz);
 
 TS01: clock
 port map (
@@ -1377,7 +1352,8 @@ port map(
 	KEYF			=> kb_f_bus,
 	KEYJOY			=> kb_joy_bus,
 	SCANCODE		=> key_scancode,
-	RX			=> USB_TX);
+	PS2_CLK => PS2_CLK,
+	PS2_DAT => PS2_DAT);
 
 SE9: entity work.mc146818a
 port map (
@@ -1450,7 +1426,7 @@ port map (
 	CLK   			=> clk_84mhz,
 	RESET 			=> areset,
 	DAC_DATA		=> audio_l,
-	DAC_OUT   		=> AP);
+	DAC_OUT   		=> DAC_OUT_L);
 
 -- Delta-Sigma
 U20: entity work.dac
@@ -1458,42 +1434,54 @@ port map (
 	CLK   			=> clk_84mhz,
 	RESET 			=> areset,
 	DAC_DATA		=> audio_r,
-	DAC_OUT   		=> AN);
+	DAC_OUT   		=> DAC_OUT_R);
 
 -- HDMI
-inst_dvid: entity work.hdmi
-port map(
-	CLK_DVI			=> clk_hdmi,
-	CLK_PIXEL		=> clk_28mhz,
-	R			=> vred_ts,
-	G			=> vgrn_ts,
-	B			=> vblu_ts,
-	BLANK			=> csync_ts,
-	HSYNC			=> hsync_ts,
-	VSYNC			=> vsync_ts,
-	AUX			=> "000000000000",
-	TMDS_D0			=> HDMI_D0,
-	TMDS_D1			=> HDMI_D1,
-	TMDS_D2			=> HDMI_D2,
-	TMDS_CLK		=> HDMI_CLK);
+--inst_dvid: entity work.hdmi
+--port map(
+--	CLK_DVI			=> clk_hdmi,
+--	CLK_PIXEL		=> clk_28mhz,
+--	R			=> vred_ts,
+--	G			=> vgrn_ts,
+--	B			=> vblu_ts,
+--	BLANK			=> csync_ts,
+--	HSYNC			=> hsync_ts,
+--	VSYNC			=> vsync_ts,
+--	AUX			=> "000000000000",
+--	TMDS_D0			=> HDMI_D0,
+--	TMDS_D1			=> HDMI_D1,
+--	TMDS_D2			=> HDMI_D2,
+--	TMDS_CLK		=> HDMI_CLK);
 
 -- I2C Controller
-U12: entity work.i2c
-port map (
-	RESET			=> reset,
-	CLK			=> clk_28mhz,
-	ENA			=> ena_0_4375mhz,
-	A			=> cpu_a_bus(4),
-	DI			=> cpu_do_bus,
-	DO			=> i2c_do_bus,
-	WR			=> i2c_wr,
-	I2C_SCL			=> SCL,
-	I2C_SDA			=> SDA);
+--U12: entity work.i2c
+--port map (
+--	RESET			=> reset,
+--	CLK			=> clk_28mhz,
+--	ENA			=> ena_0_4375mhz,
+--	A			=> cpu_a_bus(4),
+--	DI			=> cpu_do_bus,
+--	DO			=> i2c_do_bus,
+--	WR			=> i2c_wr,
+--	I2C_SCL			=> SCL,
+--	I2C_SDA			=> SDA);
+
+-- VGA
+-- todo: scan_convert
+VGA_R <= vred_ts(7 downto 3);
+VGA_G <= vgrn_ts(7 downto 2);
+VGA_B <= vblu_ts(7 downto 3);
+VGA_HS <= hsync_ts;
+VGA_VS <= vsync_ts;
+
+SDRAM_CKE <= '1'; -- pullup
+SDRAM_CS_N <= '0'; -- pulldown
+BUZZER <= '1'; -- todo
 
 -------------------------------------------------------------------------------
 -- Global
 -------------------------------------------------------------------------------
-areset <= not USB_RESET_N;
+areset <= not KEYS(3);
 reset <= areset or not locked or (kb_f_bus(0));	-- Reset
 go_arbiter <= go;
 
@@ -1514,7 +1502,7 @@ cpu_di_bus <=	rom_do_bus when (loader = '1' and cpu_mreq_n = '0' and cpu_rd_n = 
 		sdr_do_bus when (cpu_mreq_n = '0' and cpu_rd_n = '0') else 	-- SDRAM
 		im2vect	when intack = '1' else
 		spi_do_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus( 7 downto 0) = X"02") else
-		spi_busy & ETH_INT_N & "111111" when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus( 7 downto 0) = X"03") else
+		spi_busy & "1111111" when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus( 7 downto 0) = X"03") else
 		mc146818a_do_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else -- MC146818A
 		ssg_cn0_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = "1111111111111101" and ssg_sel = '0') else -- TurboSound
 		ssg_cn1_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = "1111111111111101" and ssg_sel = '1') else
@@ -1570,8 +1558,8 @@ SD_CS_N <= sdcs_n_TS or loader;
 -- SPI ENC424J600/M25P16
 spi_wr <= '1' when (cpu_iorq_n = '0' and cpu_wr_n = '0' and cpu_a_bus(7 downto 1) = "0000001") else '0';
 NCSO <= spi_cs_n when port_xx01_reg(0) = '0' else '1';
-spi_miso <= DATA0 when port_xx01_reg(0) = '0' else ETH_SO;
-ETH_CS_N <= '1' when port_xx01_reg(0) = '0' else spi_cs_n;
+spi_miso <= DATA0 when port_xx01_reg(0) = '0' else '0';
+--ETH_CS_N <= '1' when port_xx01_reg(0) = '0' else spi_cs_n;
 
 -- I2C
 i2c_wr <= '1' when (cpu_a_bus(7 downto 5) = "100" and cpu_a_bus(3 downto 0) = "1100" and cpu_wr_n = '0' and cpu_iorq_n = '0') else '0';	-- Port xx8C/xx9C[xxxxxxxx_100n1100]
