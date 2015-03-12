@@ -1497,7 +1497,8 @@ end process;
 
 -- CPU interface
 --cpu_addr_ext <= "100" when (loader = '1' and cpu_a_bus(15 downto 14) = "11") else csvrom & "00"; --- ROM csrom (only for BANK0)
-cpu_addr_ext <= "100" when loader = '1' else csvrom & "00"; --- ROM csrom (only for BANK0) ; хак для загрузки с fat32 
+--cpu_addr_ext <= "100" when loader = '1' else csvrom & "00"; --- ROM csrom (only for BANK0) ; хак для загрузки с fat32 
+cpu_addr_ext <= "100" when (loader = '1' and (cpu_a_bus(15 downto 14) = "10" or cpu_a_bus(15 downto 14) = "11")) else csvrom & "00"; -- (c) VBI
 
 dram_rdata <= sdr_do_bus_16;
 
