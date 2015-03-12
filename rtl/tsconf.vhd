@@ -157,6 +157,7 @@ signal areset			: std_logic;
 --signal key_reset		: std_logic;
 signal locked			: std_logic;
 signal loader			: std_logic := '1';
+signal zports_loader	: std_logic := '0';
 signal dos			: std_logic := '1';
 --signal xtpage_0     	 	: std_logic_vector(7 downto 0);
 -- PS/2 Keyboard
@@ -952,7 +953,7 @@ port map (
 	dataout			=> ena_ports,
 	a			=> cpu_a_bus,
 	rst			=> reset,
-	loader   		=> loader, 		-- for load ROM, SPI should be enable 
+	loader   		=> zports_loader,--loader, 		-- for load ROM, SPI should be enable ; хак для загрузки с fat32
 	opfetch			=> opfetch, 		-- from zsignals
 	rd			=> rd,
 	wr			=> wr,
@@ -1495,7 +1496,9 @@ begin
 end process;
 
 -- CPU interface
-cpu_addr_ext <= "100" when (loader = '1' and cpu_a_bus(15 downto 14) = "11") else csvrom & "00"; --- ROM csrom (only for BANK0)
+--cpu_addr_ext <= "100" when (loader = '1' and cpu_a_bus(15 downto 14) = "11") else csvrom & "00"; --- ROM csrom (only for BANK0)
+cpu_addr_ext <= "100" when loader = '1' else csvrom & "00"; --- ROM csrom (only for BANK0) ; хак для загрузки с fat32 
+
 dram_rdata <= sdr_do_bus_16;
 
 cpu_di_bus <=	rom_do_bus when (loader = '1' and cpu_mreq_n = '0' and cpu_rd_n = '0' and cpu_a_bus(15 downto 13) = "000") else
@@ -1511,10 +1514,12 @@ cpu_di_bus <=	rom_do_bus when (loader = '1' and cpu_mreq_n = '0' and cpu_rd_n = 
 		dout_ports when ena_ports = '1' else
 		"11111111";
 
+zports_loader <= '1' when loader = '1' and port_xx01_reg(0) = '0' else '0'; -- enable zports_loader only for SPI flash loading mode
+
 process (areset, clk_28mhz, cpu_a_bus, cpu_mreq_n, cpu_wr_n, cpu_do_bus, port_xx01_reg)
 begin
 	if areset = '1' then
-		port_xx01_reg <= "00000000";	-- bit2 = (0:Loader ON, 1:Loader OFF); bit0 = (0:ETH, 1:FLASH)
+		port_xx01_reg <= "00000001";	-- bit2 = (0:Loader ON, 1:Loader OFF); bit0 = (0:FLASH, 1:SD)
 		loader <= '1';
 	elsif clk_28mhz'event and clk_28mhz = '1' then
 		if cpu_iorq_n = '0' and cpu_wr_n = '0' and cpu_a_bus(7 downto 0) = "00000001" then port_xx01_reg <= cpu_do_bus; end if;
@@ -1553,9 +1558,10 @@ mc146818a_wr <= '1' when (port_bff7 = '1' and cpu_wr_n = '0') else '0';
 port_bff7 <= '1' when (cpu_iorq_n = '0' and cpu_a_bus = X"BFF7" and cpu_m1_n = '1' and port_eff7_reg(7) = '1') else '0';
 
 -- Z-Controller
-SD_CS_N <= sdcs_n_TS or loader;
+--SD_CS_N <= sdcs_n_TS or loader;
+SD_CS_N <= sdcs_n_TS;
 
--- SPI ENC424J600/M25P16
+-- SPI NC/W25Q32
 spi_wr <= '1' when (cpu_iorq_n = '0' and cpu_wr_n = '0' and cpu_a_bus(7 downto 1) = "0000001") else '0';
 NCSO <= spi_cs_n when port_xx01_reg(0) = '0' else '1';
 spi_miso <= DATA0 when port_xx01_reg(0) = '0' else '0';

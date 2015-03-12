@@ -138,7 +138,7 @@ port map (
 				when X"33" => keys(6)(4) <= pressrelease_n; -- H
 
 				when X"29" => keys(7)(0) <= pressrelease_n; -- SPACE
-								  keys(8)(4) <= pressrelease; -- kempston fire
+								  --keys(8)(4) <= pressrelease; -- kempston fire
 				when X"14" => keys(7)(1) <= pressrelease_n; -- CTRL (Symbol Shift)
 				when X"3a" => keys(7)(2) <= pressrelease_n; -- M
 				when X"31" => keys(7)(3) <= pressrelease_n; -- N
@@ -147,16 +147,16 @@ port map (
 				-- Cursor keys
 				when X"6b" => keys(0)(0) <= pressrelease_n; -- Left (CAPS 5)
 							  keys(3)(4) <= pressrelease_n;
-							  keys(8)(1) <= pressrelease; -- kempston left
+							  --keys(8)(1) <= pressrelease; -- kempston left
 				when X"72" => keys(0)(0) <= pressrelease_n; -- Down (CAPS 6)
 							  keys(4)(4) <= pressrelease_n;
-							  keys(8)(2) <= pressrelease; -- kempston down
+							  --keys(8)(2) <= pressrelease; -- kempston down
 				when X"75" => keys(0)(0) <= pressrelease_n; -- Up (CAPS 7)
 							  keys(4)(3) <= pressrelease_n;
-							  keys(8)(3) <= pressrelease; -- kempston up
+							  --keys(8)(3) <= pressrelease; -- kempston up
 				when X"74" => keys(0)(0) <= pressrelease_n; -- Right (CAPS 8)
 							  keys(4)(2) <= pressrelease_n;
-							  keys(8)(0) <= pressrelease; -- kempston right
+							  --keys(8)(0) <= pressrelease; -- kempston right
 
 				-- Other special keys sent to the ULA as key combinations
 				when X"66" => keys(0)(0) <= pressrelease_n; -- Backspace (CAPS 0)
@@ -194,8 +194,8 @@ port map (
 				when X"07" => keys(9)(0) <= pressrelease; -- F12
 				 
 				-- Hardware keys
-				-- when X"7c" => keys(9)(2) <= pressrelease;	-- PrtScr					
-				-- when X"7e" => keys(9)(3) <= pressrelease;	-- Scroll Lock
+				--when X"7c" => keys(9)(2) <= pressrelease;	-- PrtScr					
+				--when X"7e" => keys(9)(3) <= pressrelease;	-- Scroll Lock
 				-- when X"48" => keys(9)(4) <= pressrelease;	-- Pause
 								
 				when others => null;
