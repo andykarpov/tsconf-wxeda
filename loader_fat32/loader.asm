@@ -1,10 +1,17 @@
+ 		DEVICE	ZXSPECTRUM48
 ; -----------------------------------------------------------------------------
 ; LOADER(FAT32) 
 ; -----------------------------------------------------------------------------
+TX_Port         EQU #F8EF
 ;-----CONST-----
-TOTAL_PAGE     	EQU   31         ; 31(512kB ROM)
+TOTAL_PAGE     	EQU   31         ; 31(512kB ROM) //+ 2 (32kB) GS ROM
+Start      	EQU   #0000      ; BANK0 (ROM)
 ;================== LOADER EXEC CODE ==========================================
-		JP  StartProgFat32
+		ORG Start    ; Exec code - Bank0:
+		JP  StartProg
+		;- LOADER ID -------------------------
+		;DB "LOADER(FAT32) V2.0/2014.09.10 | "
+		;DB "LOADED FILES:"
 		;- Name of ROMs files-----------------
 FES1     	DB #10 ;flag (#00 - file, #10 - dir)
 		DB "ROMS"	          ;DIR name
@@ -14,34 +21,42 @@ FES2     	DB #00 ;flag (#00 - file, #10 - dir)
 		DB "ZXEVO.ROM"    ;file name //"TEST128.ROM"
 		DB 0
 		;-------------------------------------
+		;------
+;FES3     	DB #00 ;flag (#00 - file, #10 - dir)
+;		DB "GS105A.ROM"       ;file name  - 32kB
+;		DB 0
+		;ORG #F0
+		;DB "Start Prog 0x100"
 ;=======================================================================
-StartProgFat32
-		ld a,%00000001			; %00000001 (bit2=0, bit1=0, bit0=1)
-		ld bc,system_port
-		out (c),a
-
-		ld hl,str_sd
-		call print_str
-
-		;DI               ; DISABLE INT                   (PAGE2)
+		;ORG #100         ; Reserve 512byte  
+StartProg
+		DI               ; DISABLE INT                   (PAGE2)
 		LD SP,PWA        ; STACK_ADDR = BUFZZ+#4000;    0xC000-x 
 		LD BC,SYC,A,DEFREQ:OUT(C), A ;SET DEFREQ:%00000010-14MHz
 		; перед испоьзованием STACK - преназначаем номер страницы
+		;---PAGE3
+		LD B,PW3/256 : IN A,(C)      ;READ PAGE3 //PW3:#13AF
+		LD (PGR3),A                  ;(PGR3) <- SAVE orig PAGE3
+		;---PAGE2
+		LD B,PW2/256 : IN A,(C)      ;READ PAGE2 //PW2:#12AF 
+		LD E,PG0: OUT (C),E          ;SET PAGE2=0xF7
+		LD (PGR),A                   ;(PGR) <- SAVE orig PAGE2		
 		;=======================================================
-		CALL SWAP_PAGES
-
+		
 ;=============== SD_LOADER========================================
 SD_LOADER	
 		;step_1	======== INIT SD CARD ========
+		;LD A, #00 
+		;CALL COM_TX
 		;-------		
 		LD A, #00 	;STREAM: SD_INIT, HDD
 		CALL FAT_DRV
-		JR NZ,ERR_INIT	;INIT - FAILED
+		JR NZ,ERR	;INIT - FAILED
 		;step_2 ======= find DIR entry =======	
 		LD HL,FES1
 		LD A, #01 	;find DIR entry
 		CALL FAT_DRV
-		JR NZ,ERR_DIR	;dir not found
+		JR NZ,ERR	;dir not found
 		;-------------------------------------
 		LD A, #02       ;SET CURR DIR - ACTIVE
 		CALL FAT_DRV
@@ -49,10 +64,24 @@ SD_LOADER
 		LD HL,FES2
 		LD A, #01 	;find File entry
 		CALL FAT_DRV
-		JR NZ,ERR_FILE	;file not  found
+		JR NZ,ERR	;file not  found
 		;step_4 ======= download data =======
 		LD A, #0     	;#0 - start page 
 		CALL FAT32_LOADER ; 
+		;step_5 ======= find File entry ======
+		;-------------------------------------
+;		LD HL,FES3
+;		LD A, #01 	  ;find File entry
+;		CALL FAT_DRV
+;		JR NZ,ERR	  ;file not  found
+		;step_6 ======= download data ========
+;		LD A, 32     	  ;32 - start page DEC
+;		CALL FAT32_LOADER ; 
+		;step_7 ======= INIT VS
+;		CALL VS_INIT
+		;----------------------
+		;LD A, #01 
+		;CALL COM_TX
 		;----------------------
 		JP RESET_LOADER
 ;========================================================================================
@@ -95,71 +124,91 @@ LOAD_16kb
 		; JP RESET_LOADER
 EXIT_FAT32_LOADER
 		RET;
+;------------------------------------------------------------------------------		
+ERR
+;------------------------------------------------------------------------------
+		 LD A,#02	; ERROR: BORDER -RED!!!!!!!!!!!!!!!!!!!!!!!!!!!		
+		 OUT (#FE),A    ; 
+		 HALT
+;==============================================================================		
+;------------------------------------------------------------------------------
+;                VS1053 Init
+;------------------------------------------------------------------------------
+VS_INIT	
+		LD A,%00000000          ; XCS=0 XDCS=0
+		OUT (#05),A
+		LD HL,TABLE
+		LD B,44
+VS_INIT1 	LD D,(HL)
+		CALL VS_RW              ; WR D ==>
+		INC HL
+		DJNZ VS_INIT1
+		LD A,%00100000          ; XCS=0 XDCS=1
+		OUT (#05),A
+                RET
+;==============================================================================
 
-SWAP_PAGES
-		;---PAGE3
-		LD B,PW3/256 : IN A,(C)      ;READ PAGE3 //PW3:#13AF
-		LD (PGR3),A                  ;(PGR3) <- SAVE orig PAGE3
-		;---PAGE2
-		LD B,PW2/256 : IN A,(C)      ;READ PAGE2 //PW2:#12AF 
-		LD E,PG0: OUT (C),E          ;SET PAGE2=0xF7
-		LD (PGR),A                   ;(PGR) <- SAVE orig PAGE2		
-		RET		
-
-RESTORE_PAGES
+;----------------RESTART-------------------------------------------------------
+RESET_LOADER
 		;---ESTORE PAGE3
 		LD BC,PW3,A,(PGR3):OUT (C),A
 		;---ESTORE PAGE2
 		LD BC,PW2,A,(PGR) :OUT (C),A
-		RET	
-
-;------------------------------------------------------------------------------		
-ERR
-		 CALL RESTORE_PAGES
-		 ld hl,str_absent		;ошибка
-		 call print_str
-		 JP SPI_LOADER
-ERR_INIT		 
-		 CALL RESTORE_PAGES
-		 ld hl,str_init_f		;ошибка инициализации
-		 call print_str
-		 JP SPI_LOADER
-ERR_DIR
-		 CALL RESTORE_PAGES
-		 ld hl,str_dir_f		;ошибка чтения директории
-		 call print_str
-		 JP SPI_LOADER
-ERR_FILE
-		 CALL RESTORE_PAGES
-		 ld hl,str_file_f		;ошибка чтения файла
-		 call print_str
-		 JP SPI_LOADER
-ERR_READ
-		 CALL RESTORE_PAGES
-		 ld hl,str_err_f		;ошибка чтения
-		 call print_str
-		 JP SPI_LOADER
-;==============================================================================		
-
-
-;----------------RESTART-------------------------------------------------------
-RESET_LOADER
-		CALL RESTORE_PAGES
-
-		 ld hl,str_done		;завершено
-		 call print_str		 
-
 		;--------------------------------------------------
 		LD A,%00000100	; Bit2 = 0:Loader ON, 1:Loader OFF;
-		LD BC,system_port 
+		LD BC,#0001 
 		OUT (C),A       ; RESET LOADER
 		LD SP,#FFFF
 		JP #0000	; RESTART SYSTEM 
 		;// только после перехода на адрес 0x0000, LOADER OFF !!!!!!!!!		
 ;================================ DRIVER ======================================	
 		;========TS-Labs==================================
-		INCLUDE "inc/tsfat/TSFAT.ASM" ;
+		INCLUDE "tsfat/TSFAT.ASM" ;
 ;---------------BANK2----------------------
 PGR3 		EQU   STRMED+1   ; 
 block_16kB_cnt  EQU   STRMED+2   ; 
+
+;------------------------------------------------------------------------------
+; VS1053
+;------------------------------------------------------------------------------
+VS_RW   	
+		IN A,(#05)
+		RLCA 
+		JR C,VS_RW
+		RLCA 
+		JR NC,VS_RW
+		LD A,D
+		OUT (#04), A ; WR DATA
+				
+VS_RW1  	IN A,(#05)
+		RLCA 
+		JR C,VS_RW1
+		RLCA 
+		JR NC,VS_RW1
+		IN A,(#04)
+		RET 
+
+TABLE   	DB #52,#49,#46,#46,#FF,#FF,#FF,#FF      ;REFF....
+		DB #57,#41,#56,#45,#66,#6D,#74,#20      ;WAVEfmt
+		DB #10
+		DB #00,#00,#00,#01,#00,#02,#00
+
+		DB #80,#BB,#00,#00                      ;48kHz
+		DB #00,#EE,#02,#00
+
+		DB #04,#00
+		DB #10,#00
+		DB #64,#61,#74,#61                      ;data
+		DB #FF,#FF,#FF,#FF
+;===================== COM_TX ================================
+;COM_TX 		
+;		PUSH BC
+;		LD BC, #F8EF
+;		OUT (C), A
+;		POP BC
+;		RET
+;=============================================================
+		savebin "loader.bin",Start, 8192
+		;savebin "loader.bin",Start, 2048    ;-2K
+
 
