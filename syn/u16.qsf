@@ -233,4 +233,6 @@ set_global_assignment -name VERILOG_FILE ../rtl/ts/cpu/memory/cache_data.v
 set_global_assignment -name VERILOG_FILE ../rtl/ts/cpu/memory/cache_addr.v
 set_global_assignment -name QIP_FILE ../rtl/rom/rom.qip
 set_global_assignment -name VHDL_FILE ../rtl/ts/video/lut.vhd
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_CLK
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_DAT
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
