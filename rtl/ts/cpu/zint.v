@@ -79,8 +79,8 @@ module zint
 			int_frm <= 1'b0;
 		else if (int_start_frm)
 			int_frm <= 1'b1;
-//		else if (intctr_fin || intack_s)	// priority 0
-		else if (intctr_fin)			// MVV 01.11.2014
+		else if (intctr_fin || intack_s)	// priority 0
+//		else if (intctr_fin)
 			int_frm <= 1'b0;
 
 	reg int_lin;
@@ -111,10 +111,10 @@ module zint
 
 	
 //	always @(posedge zclk, posedge int_start_lin)
-	always @(posedge zclk, posedge int_start_frm)	// MVV 31.10.2014
+	always @(posedge zclk, posedge int_start_frm)
 	begin
 //		if (int_start_lin)
-		if (int_start_frm)			// MVV 31.10.2014
+		if (int_start_frm)
 			intctr <= 6'b000000;
 		else if (!intctr_fin)
 			intctr <= intctr + 6'b000001;
